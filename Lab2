@@ -1,0 +1,267 @@
+public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        //verifies what data is introduced, number of ingredients
+        //if the numebr of ingredients is hihger, a notification in form of message box is shown
+        //stores all names of checked checkBoxes in Lists
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (checkedListBox1.CheckedItems.Count > 3 || checkedListBox2.CheckedItems.Count > 2 ||
+                checkedListBox3.CheckedItems.Count > 5)
+            {
+                if (checkedListBox1.CheckedItems.Count > 3)
+                {
+                    // If so, loop through all checked items and print results.
+                    string s = "";
+                    for (int x = 0; x <= checkedListBox1.CheckedItems.Count - 1; x++)
+                    {
+                        s = s + "Max 3 types of chesses are allowed \n";
+                    }
+                    MessageBox.Show(s);
+                }
+                if (checkedListBox2.CheckedItems.Count > 2)
+                {
+                    string s = "";
+                    for (int x = 0; x <= checkedListBox1.CheckedItems.Count - 1; x++)
+                    {
+                        s = s + "Max 2 types of meat are allowed \n";
+                    }
+                    MessageBox.Show(s);
+                }
+                if (checkedListBox3.CheckedItems.Count > 5)
+                {
+                    string s = "";
+                    for (int x = 0; x <= checkedListBox1.CheckedItems.Count - 1; x++)
+                    {
+                        s = s + "Max 5 types of chesses are allowed \n";
+                    }
+                    MessageBox.Show(s);
+                }
+            }
+            else 
+            {
+                if (Order.Cheeses.Count != 0)
+                    Order.Cheeses.Clear();
+                if (Order.Meat.Count != 0)
+                    Order.Meat.Clear();
+                if (Order.Vegetables.Count != 0)
+                    Order.Vegetables.Clear();
+                //code for going to second form
+                foreach (object itemChecked in checkedListBox1.CheckedItems) 
+                {
+                    Order.Cheeses.Add(itemChecked.ToString());
+                }
+                foreach (object itemChecked in checkedListBox2.CheckedItems)
+                {      
+                    Order.Meat.Add(itemChecked.ToString());
+                }
+                foreach (object itemChecked in checkedListBox3.CheckedItems)
+                {   
+                    Order.Vegetables.Add(itemChecked.ToString());
+                }
+                //declaring a ninstance of Form2, and showing the form
+                Order.customer = textBox1.Text;
+                Form2 f2 = new Form2();
+                f2.ShowDialog();
+            }
+        }
+
+        private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void checkedListBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkedListBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+        
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////////////
+    
+    public partial class Form2 : Form
+    {
+        public Form2()
+        {
+            InitializeComponent();
+        }
+
+        double totalPrice = 0; 
+        //adds ingredients to the listBox1 and displays the total price in textBox1
+        private void Form2_Load(object sender, EventArgs e)
+        {
+            if (listBox1.Items.Count != 0)
+                listBox1.Items.Clear();
+            addElementsToListBox(Order.Cheeses);
+            addElementsToListBox(Order.Meat);
+            addElementsToListBox(Order.Vegetables);
+            Order.intDictionaryValues();
+            totalPrice = Order.totalPrice();
+            textBox1.Text = totalPrice.ToString();
+        }
+
+        //stores the checked items in lsitBox
+        private void addElementsToListBox(List<string> list)
+        {
+            foreach (string element in list)
+            {
+                listBox1.Items.Add(element);
+            }
+        }
+        //button to close Form2 window
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        //creates a instance of Form3 and displays the window
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Form3 f3 = new Form3(); // Instantiate a Form3 object.
+            f3.ShowDialog();
+            this.Close();
+        }
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////////
+    
+    public partial class Form3 : Form
+    {
+        public Form3()
+        {
+            InitializeComponent();
+        }
+        //shows the  formed ID, user's by changing text of a label
+        private void Form3_Load(object sender, EventArgs e)
+        {
+            label1.Text = "Your order has been sent. \n Id number is " + Order.setID() + " Name: " + Order.customer;
+        }
+        //closes the form
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////////////
+    
+    public static class Order
+    {
+        //contains the name of teh user/customer
+        public static string customer;
+        //public static List<int> Ids = new List<int>();
+        //variable which holds the value of current id
+        public static int id = 0;
+        public static string customerId; 
+        //lists containing the string values of each ingredient, each cathegory has its own list
+        public static List<string> Cheeses = new List<string>();
+        public static List<string> Meat = new List<string>();
+        public static List<string> Vegetables = new List<string>();
+        //keys - contain string of each ingredient 
+        //values - contain prices corespoding
+        public static Dictionary<string, double> dictCheeses = new Dictionary<string, double>();
+        public static Dictionary<string, double> dictMeat = new Dictionary<string, double>();
+        public static Dictionary<string, double> dictVegetables = new Dictionary<string, double>();
+
+        //loads strings of ingredients and their prices
+        public static void intDictionaryValues()
+        {
+            //prices for cheeses
+            if (dictCheeses.Count != 0)
+                dictCheeses.Clear();
+            if (dictCheeses.Count == 0)
+            {
+                dictCheeses.Add("Feta", 700);
+                dictCheeses.Add("Parmesan", 300);
+                dictCheeses.Add("Mozarella", 500);
+                dictCheeses.Add("Dor Blue", 350);
+                dictCheeses.Add("Edam", 400);
+                dictCheeses.Add("Brinza", 200);
+            }
+
+            //prices for meat
+            if (dictMeat.Count != 0)
+                dictMeat.Clear();
+            if (dictMeat.Count == 0)
+            {
+                dictMeat.Add("Bacon", 500);
+                dictMeat.Add("Prosciutto", 1000);
+                dictMeat.Add("Salami", 400);
+                dictMeat.Add("Chicken Breast", 700);
+                dictMeat.Add("Ham", 900);
+            }
+
+            //prices for vegetables
+            if (dictVegetables.Count != 0)
+                dictVegetables.Clear();
+            if (dictVegetables.Count == 0)
+            {
+                dictVegetables.Add("Fresh Mushrooms", 500);
+                dictVegetables.Add("Smoked Mushrooms", 700);
+                dictVegetables.Add("Red Onion", 300);
+                dictVegetables.Add("Tomatoes", 200);
+                dictVegetables.Add("Garlic", 100);
+                dictVegetables.Add("Rucola", 300);
+                dictVegetables.Add("Marinated Gogoshars", 300);
+                dictVegetables.Add("Corn", 400);
+                dictVegetables.Add("Parsley", 300);
+                dictVegetables.Add("Chili Pepper", 500);
+            }
+        }
+
+        //computes prices for each type of ingredients
+        public static double computePrice(Dictionary<string,double> dictionary, List<string> list)
+        {
+            double sum = 0;
+            foreach (KeyValuePair<string, double> entry in dictionary)
+            {
+                foreach (string element in list)
+                {
+                    if (entry.Key == element)
+                        sum += entry.Value;
+                }
+            }
+            return sum;
+        }
+
+        //computes teh total price of the finally obtained pizza
+        public static double totalPrice()
+        {
+            double totalSum = 0;
+            totalSum += computePrice(dictCheeses, Cheeses);
+            totalSum += computePrice(dictMeat, Meat);
+            return totalSum += computePrice(dictVegetables, Vegetables);
+        }
+
+        //coputes the id of the current order
+        public static string setID()
+        {
+            id++;
+            if (id < 10)
+            {
+                return customerId = "0" + "0" + id.ToString();
+            }
+            else if (id < 100)
+            {
+                return customerId = "0" + id.ToString();
+            }
+            else 
+            {
+                return customerId = id.ToString();
+            }
+        }
+    }
